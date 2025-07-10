@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>Daftar Pesanan</title>
+</head>
+<body>
+    
+    <div class="container my-5">
+        <h2 class="mb-4 text-center">Daftar Pesanan</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                <th>Nama</th>
+                <th>Alamat</th>
+                <th>Tanggal</th>
+                <th>Detail</th>
+                <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-pesanan"></tbody>
+        </table>
+        <a href="produkadmin.html"><button class="btn btn-warning text-light">Kembali</button></a>
+    </div>
+
+<script>
+fetch('http://localhost:5000/api/pesanan')
+  .then(res => res.json())
+  .then(res => {
+    const tbody = document.getElementById("tabel-pesanan");
+    res.data.forEach(p => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${p.nama}</td>
+        <td>${p.alamat}</td>
+        <td>${new Date(p.tanggal).toLocaleString()}</td>
+        <td>
+          <ul>
+            ${p.items.map(i => `<li>${i.namaproduk} x ${i.jumlah}</li>`).join('')}
+          </ul>
+        </td>
+        <td>Rp ${p.total.toLocaleString()}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  });
+</script>
+
+</body>
+</html>

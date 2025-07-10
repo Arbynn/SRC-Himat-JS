@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+body ,html {
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    background-color: white;
+    height: 100%;
+    font-weight: 700 !important;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    height: 500px;
+    width: 430px;
+    padding: 0 35px;
+    background-color: white;
+    border: none;
+}
+
+input[type="text"],
+input[type="password"] {
+    border-radius: 20px;
+    border: 2px solid rgb(205, 205, 205);
+
+}
+
+.btn-login {
+    height: 35px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+.link {
+    color: #198754;
+    text-decoration: none;
+}
+
+.link:hover {
+    color: #198754;
+    text-decoration: none;
+}
+
+.btn-gmail {
+    height: 35px;
+    border: 2px solid rgb(205, 205, 205);
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+.img-style {
+    height: 20px;
+    width: 20px;
+}
+
+.btn {
+    background-color: red !important;
+}

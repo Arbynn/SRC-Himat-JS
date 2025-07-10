@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+</head>
+<body>
+    <div id="header"></div>
+    <div class="container-fluid py-5">
+        <div class="container mt-5">
+            <h2 class="text-center my-5">Keranjang Belanja</h2>
+            <div class="table-responsive">
+                <table class="table" id="tabel-keranjang">
+                    <tr>
+                        <th>#</th>
+                        <th></th>
+                        <th>Pesanan</th>
+                        <th>Harga</th>
+                        <th>Jumlah</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                    <tbody id="list-keranjang"></tbody>
+                </table>
+                
+            </div>
+            
+                <div class="mb-3">
+                    <label for="nama_pemesan" class="form-label"><strong>Nama Pemesan</strong></label>
+                    <input type="text" class="form-control" id="namaPemesan" name="nama_pemesan" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="alamat_pemesan" class="form-label"><strong>Alamat Pemesan</strong></label>
+                    <textarea class="form-control" id="alamatPemesan" name="alamat_pemesan" rows="3" required></textarea>
+                </div>
+
+            <button class="btn btn-warning text-light" onclick="checkout()">Checkout</button>
+        </div>
+      </div>
+
+    <div id="footer"></div>
+    <script>
+        fetch("./partials/header.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("header").innerHTML = html;
+    });
+    </script>
+    <script>
+        fetch("./partials/footer.html")
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("footer").innerHTML = html;
+    });
+    </script>
+    <script>
+    // Tampilkan isi keranjang dari localStorage
+    function tampilkanKeranjang() {
+      const keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
+      const container = document.getElementById("list-keranjang");
+      container.innerHTML = '';
+
+      if (keranjang.length === 0) {
+        container.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center text-muted">Keranjang masih kosong</td>
+          </tr>
+        `;
+        return;
+      }
+
+      keranjang.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="align-middle">${index + 1}</td>
+          <td><img src="${item.gambar}" width="80" alt="${item.namaproduk}"></td>
+          <td class="align-middle">${item.namaproduk}</td>
+          <td class="align-middle">Rp ${item.harga?.toLocaleString()}</td>
+          <td class="align-middle">${item.jumlah}</td>
+          <td class="align-middle">Rp ${(item.harga * item.jumlah).toLocaleString()}</td>
+          <td class="align-middle">
+            <button class="btn btn-danger btn-sm" onclick="hapusDariKeranjang('${item._id}')">Hapus</button>
+          </td>
+        `;
+        container.appendChild(row);
+      });
+      let totalBayar = keranjang.reduce((acc, item) => acc + item.harga * item.jumlah, 0);
+
+        const totalRow = document.createElement('tr');
+        totalRow.innerHTML = `
+        <td colspan="5" class="text-end fw-bold">Total Bayar</td>
+        <td colspan="2" class="fw-bold">Rp ${totalBayar.toLocaleString()}</td>
+        `;
+        container.appendChild(totalRow);
+
+    }
+
+    // Hapus produk dari keranjang berdasarkan ID
+    function hapusDariKeranjang(id) {
+      let keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
+      keranjang = keranjang.filter(p => p._id !== id);
+      localStorage.setItem('keranjang', JSON.stringify(keranjang));
+      tampilkanKeranjang(); // refresh tabel
+    }
+
+    // Simulasi checkout
+    function checkout() {
+  const nama = document.getElementById("namaPemesan").value.trim();
+  const alamat = document.getElementById("alamatPemesan").value.trim();
+  const keranjang = JSON.parse(localStorage.getItem('keranjang')) || [];
+
+  // Validasi
+  if (!nama || !alamat || keranjang.length === 0) {
+    alert("Silakan isi nama, alamat, dan pastikan keranjang tidak kosong.");
+    return;
+  }
+
+  // Hitung total & rincian
+  const rincian = keranjang.map(item =>
+    `- ${item.namaproduk} x ${item.jumlah} = Rp ${(item.harga * item.jumlah).toLocaleString()}`
+  ).join('\n');
+
+  const total = keranjang.reduce((acc, item) => acc + item.harga * item.jumlah, 0);
+
+  // Konfirmasi
+  const konfirmasi = confirm(
+    `Pesanan atas nama: ${nama}\n` +
+    `Alamat: ${alamat}\n` +
+    `\nRincian:\n${rincian}\n\n` +
+    `Total: Rp ${total.toLocaleString()}\n\nLanjut checkout?`
+  );
+
+  if (!konfirmasi) return;
+
+  // Buat objek pesanan
+  const pesanan = {
+    nama,
+    alamat,
+    total,
+    items: keranjang.map(p => ({
+      namaproduk: p.namaproduk,
+      harga: p.harga,
+      jumlah: p.jumlah
+    }))
+  };
+
+  // Kirim ke server
+  fetch('http://localhost:5000/api/pesanan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(pesanan)
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Gagal menyimpan ke server");
+      return res.json();
+    })
+    .then(() => {
+      alert("Checkout berhasil!");
+      localStorage.removeItem('keranjang');
+      tampilkanKeranjang();
+      document.getElementById("namaPemesan").value = '';
+      document.getElementById("alamatPemesan").value = '';
+    })
+    .catch(err => {
+      console.error(err);
+      alert("❌ Gagal menyimpan pesanan ke server.");
+    });
+}
+
+// Panggil fungsi keranjang saat halaman dimuat
+document.addEventListener('DOMContentLoaded', tampilkanKeranjang);
+
+  </script>
+</body>
+</html>

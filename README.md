@@ -11,10 +11,11 @@ Peran anggota :
 1. Duiki Arbiyan
    (Record video, membuat backend dan merapihkan frontend.)
 2. Bagus Setiya Romadoni
-   (Membuat navbar dan login.)
+   (Membuat dan merapihkan tampilan navbar dan login.)
 3. Muhammad Haris Abdullah
    (Mengisi dan membuat tampilan produk.)
-4. Botur
+4. Muhammad Fatkhurur Rokhman
+   (Integrasi backend dan frontend & membuat tampilan tambah produk)
    
 
 Link video :

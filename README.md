@@ -1,4 +1,4 @@
-Deskripsi:
+
 SRC HIMAT adalah platform belanja online yang menyediakan berbagai kebutuhan sehari-hari,mulai dari kebutuhan rumah tangga, makanan dan minuman. dengan tampilan nyang sederhana dan mudah digunakan,
 pelanggan dapat berbelanja dengan cepat tanpa harus keluar rumah. Website ini dirancang untuk membeerikan pengalaman belanja yang praktis, hemat waktu, dan mudah.
 fitur unggulan:
